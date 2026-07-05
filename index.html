@@ -1,249 +1,860 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IZ TRACKER UMUR</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            900: '#1e3a8a',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slight': 'bounceSlight 2s infinite',
+                    },
+                    keyframes: {
+                        bounceSlight: {
+                            '0%, 100%': { transform: 'translateY(-2%)' },
+                            '50%': { transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- Flatpickr (Pop up Tanggal) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
     <style>
-        /* Import Google Font */
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-        
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Poppins', sans-serif; 
+        /* --- CUSTOM FLATPICKR GLASSMORPHISM THEME --- */
+        .flatpickr-calendar {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(16px) !important;
+            -webkit-backdrop-filter: blur(16px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15) !important;
+            border-radius: 24px !important;
+            padding: 10px !important;
+            font-family: 'Poppins', sans-serif !important;
+            animation: popIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
         }
-        
-        body { 
-            background: #0f172a; /* Latar belakang gelap modern */
-            color: #f8fafc; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            padding: 20px; 
+        .dark .flatpickr-calendar {
+            background: rgba(15, 23, 42, 0.85) !important;
+            border: 1px solid rgba(255, 255, 255, 0.1) !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
         }
-        
-        .container { 
-            background: #1e293b; 
-            max-width: 400px; 
-            width: 100%; 
-            padding: 30px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            text-align: center; 
-            border: 1px solid #334155; 
+        .flatpickr-calendar.arrowTop:before, .flatpickr-calendar.arrowTop:after,
+        .flatpickr-calendar.arrowBottom:before, .flatpickr-calendar.arrowBottom:after {
+            display: none !important; /* Hilangkan panah default agar lebih clean */
         }
-        
-        h1 { 
-            font-size: 24px; 
-            font-weight: 600; 
-            color: #38bdf8; 
-            margin-bottom: 25px; 
-            letter-spacing: 2px; 
+        @keyframes popIn {
+            0% { opacity: 0; transform: translateY(15px) scale(0.9); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-        
-        .input-group { 
-            margin-bottom: 20px; 
-            text-align: left; 
+        .flatpickr-month, .flatpickr-current-month {
+            color: #1e293b !important;
+            fill: #1e293b !important;
+            height: 40px !important;
         }
-        
-        label { 
-            display: block; 
-            font-size: 14px; 
-            margin-bottom: 8px; 
-            color: #cbd5e1; 
+        .dark .flatpickr-month, .dark .flatpickr-current-month {
+            color: #f8fafc !important;
+            fill: #f8fafc !important;
         }
-        
-        input[type="date"] { 
-            width: 100%; 
-            padding: 12px; 
-            border: none; 
-            border-radius: 10px; 
-            background: #0f172a; 
-            color: #fff; 
-            font-size: 16px; 
-            outline: none; 
-            border: 1px solid #475569; 
-            transition: 0.3s; 
-            /* Mengubah warna icon kalender bawaan browser agar terlihat di dark mode */
-            color-scheme: dark; 
+        .flatpickr-weekday {
+            color: #64748b !important;
+            font-weight: 600 !important;
         }
-        
-        input[type="date"]:focus { 
-            border-color: #38bdf8; 
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); 
+        .dark .flatpickr-weekday {
+            color: #94a3b8 !important;
         }
-        
-        button { 
-            width: 100%; 
-            padding: 12px; 
-            border: none; 
-            border-radius: 10px; 
-            background: linear-gradient(135deg, #38bdf8, #2563eb); 
-            color: white; 
-            font-size: 16px; 
-            font-weight: 600; 
-            cursor: pointer; 
-            transition: 0.3s; 
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); 
+        .flatpickr-day {
+            border-radius: 12px !important;
+            color: #334155;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border: none !important;
         }
-        
-        button:hover { 
-            transform: translateY(-2px); 
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6); 
+        .dark .flatpickr-day {
+            color: #cbd5e1;
         }
-        
-        .result-box { 
-            margin-top: 25px; 
-            display: none; 
-            animation: fadeIn 0.5s ease; 
+        .flatpickr-day:hover:not(.selected) {
+            background: #e2e8f0 !important;
+            transform: scale(1.15) translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
-        
-        .main-age { 
-            font-size: 32px; 
-            font-weight: 600; 
-            color: #fbbf24; 
-            margin-bottom: 20px; 
+        .dark .flatpickr-day:hover:not(.selected) {
+            background: #334155 !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-        
-        .stats-grid { 
-            display: grid; 
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px; 
+        .flatpickr-day.selected {
+            background: linear-gradient(135deg, #3b82f6, #a855f7) !important;
+            color: white !important;
+            font-weight: bold;
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4) !important;
         }
-        
-        .stat-card { 
-            background: #0f172a; 
-            padding: 15px; 
-            border-radius: 12px; 
-            border: 1px solid #334155; 
-            transition: 0.3s;
+        .flatpickr-day.today {
+            background: rgba(59, 130, 246, 0.1) !important;
+            color: #3b82f6 !important;
+            font-weight: 700;
+        }
+        .dark .flatpickr-day.today {
+            background: rgba(96, 165, 250, 0.2) !important;
+            color: #60a5fa !important;
+        }
+        .flatpickr-months .flatpickr-prev-month, .flatpickr-months .flatpickr-next-month {
+            fill: #64748b !important;
+            transition: all 0.2s;
+        }
+        .flatpickr-months .flatpickr-prev-month:hover, .flatpickr-months .flatpickr-next-month:hover {
+            fill: #3b82f6 !important;
+            transform: scale(1.2);
+        }
+        .dark .flatpickr-months .flatpickr-prev-month, .dark .flatpickr-months .flatpickr-next-month {
+            fill: #94a3b8 !important;
+        }
+        .dark .flatpickr-months .flatpickr-prev-month:hover, .dark .flatpickr-months .flatpickr-next-month:hover {
+            fill: #60a5fa !important;
+        }
+        .flatpickr-current-month input.cur-year {
+            font-weight: 700 !important;
         }
 
-        .stat-card:hover {
-            border-color: #38bdf8;
-            transform: translateY(-2px);
-        }
+        /* Custom Styles for better Scrollbar & Transitions */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
         
-        .stat-value { 
-            font-size: 20px; 
-            font-weight: 600; 
-            color: #38bdf8; 
+        body {
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        
-        .stat-label { 
-            font-size: 12px; 
-            color: #94a3b8; 
-            margin-top: 5px;
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
         }
-        
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
+
+        .dark .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .result-section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .result-section.show {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
         }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-poppins min-h-screen flex flex-col relative overflow-x-hidden">
 
-    <div class="container">
-        <h1>IZ TRACKER UMUR</h1>
-        
-        <div class="input-group">
-            <label for="dob">Masukkan Tanggal Lahir</label>
-            <input type="date" id="dob">
+    <!-- Background Decoration -->
+    <div class="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400/20 dark:bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-400/20 dark:bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="w-full max-w-4xl mx-auto p-4 md:p-6 flex justify-between items-center z-10">
+        <div class="flex items-center gap-3 text-brand-600 dark:text-blue-400">
+            <!-- Custom Vector Logo -->
+            <svg class="w-10 h-10 md:w-12 md:h-12 drop-shadow-md animate-pulse-slow" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="100" height="100" rx="25" fill="currentColor" fill-opacity="0.1"/>
+                <path d="M50 20 A 30 30 0 1 1 49.9 20" stroke="url(#headerGrad)" stroke-width="8" stroke-dasharray="40 10" class="animate-[spin_10s_linear_infinite]"/>
+                <path d="M35 35 L65 35 L45 50 L65 65 L35 65 L55 50 Z" fill="url(#headerGrad)"/>
+                <defs>
+                    <linearGradient id="headerGrad" x1="20" y1="20" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#3b82f6"/>
+                        <stop offset="1" stop-color="#a855f7"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <h1 class="text-xl md:text-2xl font-bold tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">IZ TRACKER</h1>
         </div>
-        
-        <button onclick="calculateAge()">Lacak Sekarang</button>
+        <button id="themeToggle" class="p-2 rounded-full bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors shadow-inner">
+            <i class="ph ph-moon text-xl dark:hidden"></i>
+            <i class="ph ph-sun text-xl hidden dark:block text-yellow-400"></i>
+        </button>
+    </header>
 
-        <div class="result-box" id="result">
-            <div class="main-age" id="main-age">0 Tahun</div>
+    <!-- Main Content -->
+    <main class="flex-grow flex flex-col items-center p-4 z-10 w-full max-w-3xl mx-auto pb-20">
+        
+        <!-- Input Card -->
+        <div class="w-full glass-card rounded-3xl p-6 md:p-8 shadow-xl mb-8 animate-bounce-slight">
+            <h2 class="text-center text-2xl md:text-3xl font-bold mb-2">Kalkulator Umur Presisi</h2>
+            <p class="text-center text-slate-500 dark:text-slate-400 mb-6 text-sm md:text-base">Ketahui detail umurmu hingga hitungan detik.</p>
             
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value" id="months">0</div>
-                    <div class="stat-label">Bulan Lagi</div>
+            <div class="flex flex-col gap-4">
+                <div class="relative">
+                    <label for="dob" class="block text-sm font-medium mb-1 text-slate-600 dark:text-slate-300">Tanggal Lahir Kamu</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="ph ph-calendar-blank text-slate-400 text-lg"></i>
+                        </div>
+                        <input type="text" id="dob" placeholder="Pilih Tanggal Lahir..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 outline-none transition-all cursor-pointer shadow-sm">
+                    </div>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 ml-1 flex items-center gap-1">
+                        <i class="ph-fill ph-lightbulb text-yellow-500"></i>
+                        Tip: Di HP, gunakan penggulung tanggal bawaan. Di PC, ketuk tahun pada kalender atau ketik langsung.
+                    </p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="days">0</div>
-                    <div class="stat-label">Hari Lagi</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="total-days">0</div>
-                    <div class="stat-label">Total Hari Hidup</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="next-bday">0</div>
-                    <div class="stat-label">Hari Menuju Ultah</div>
-                </div>
+                
+                <button id="btnHitung" class="w-full mt-2 bg-gradient-to-r from-brand-600 to-blue-500 hover:from-brand-500 hover:to-blue-400 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-brand-500/50 transform hover:-translate-y-1 transition-all duration-300 flex justify-center items-center gap-2">
+                    <i class="ph-bold ph-calculator text-lg"></i>
+                    Hitung Umur Saya
+                </button>
             </div>
         </div>
-    </div>
 
+        <!-- Error Message -->
+        <div id="errorMsg" class="hidden w-full bg-red-100 text-red-600 p-4 rounded-xl mb-6 text-center text-sm font-medium border border-red-200 shadow-sm">
+            Silakan pilih tanggal lahir yang valid (tidak boleh di masa depan).
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultContainer" class="w-full result-section space-y-6">
+            
+            <!-- Hero Result (Utama) -->
+            <div class="glass-card rounded-3xl p-6 md:p-10 shadow-xl text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-purple-500 to-brand-500"></div>
+                <h3 class="text-sm font-semibold uppercase tracking-widest text-slate-500 dark:text-slate-400 mb-2">Umur Kamu Saat Ini</h3>
+                <div class="flex flex-wrap justify-center items-baseline gap-2 md:gap-4 font-bold">
+                    <div class="text-center">
+                        <span id="resYears" class="text-5xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-br from-brand-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">0</span>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1">Tahun</p>
+                    </div>
+                    <span class="text-3xl text-slate-300 dark:text-slate-600">,</span>
+                    <div class="text-center">
+                        <span id="resMonths" class="text-4xl md:text-6xl text-slate-700 dark:text-slate-200">0</span>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1">Bulan</p>
+                    </div>
+                    <span class="text-3xl text-slate-300 dark:text-slate-600">,</span>
+                    <div class="text-center">
+                        <span id="resDays" class="text-4xl md:text-6xl text-slate-700 dark:text-slate-200">0</span>
+                        <p class="text-xs md:text-sm text-slate-500 mt-1">Hari</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profil Lahir & Progress Kehidupan -->
+            <div class="glass-card rounded-3xl p-6 shadow-xl flex flex-col gap-6">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-500 flex items-center justify-center shrink-0 shadow-inner">
+                            <i class="ph-fill ph-calendar-star text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] md:text-xs text-slate-500 font-semibold uppercase tracking-wider">Lahir Pada Hari</p>
+                            <p id="bornDay" class="font-bold text-base md:text-lg text-slate-800 dark:text-white">-</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-500 flex items-center justify-center shrink-0 shadow-inner">
+                            <i class="ph-fill ph-users-three text-xl"></i>
+                        </div>
+                        <div>
+                            <p class="text-[10px] md:text-xs text-slate-500 font-semibold uppercase tracking-wider">Generasi</p>
+                            <p id="generation" class="font-bold text-base md:text-lg text-slate-800 dark:text-white">-</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="w-full">
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Progress Kehidupan (Asumsi 80 Thn)</span>
+                        <span id="lifeProgressText" class="font-bold text-brand-600 dark:text-blue-400 text-sm">0%</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden shadow-inner">
+                        <div id="lifeProgressBar" class="h-full bg-gradient-to-r from-blue-400 to-purple-500 w-0 transition-all duration-1000 ease-out relative">
+                            <div class="absolute top-0 right-0 bottom-0 w-10 bg-white/30 skew-x-12 animate-[translate_2s_infinite]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow border border-slate-100 dark:border-slate-700 text-center hover:scale-105 transition-transform">
+                    <i class="ph-duotone ph-calendar-check text-2xl text-blue-500 mb-2"></i>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Total Bulan</p>
+                    <p id="totMonths" class="font-bold text-lg">0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow border border-slate-100 dark:border-slate-700 text-center hover:scale-105 transition-transform">
+                    <i class="ph-duotone ph-calendar-blank text-2xl text-green-500 mb-2"></i>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Total Minggu</p>
+                    <p id="totWeeks" class="font-bold text-lg">0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow border border-slate-100 dark:border-slate-700 text-center hover:scale-105 transition-transform">
+                    <i class="ph-duotone ph-sun text-2xl text-yellow-500 mb-2"></i>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Total Hari</p>
+                    <p id="totDays" class="font-bold text-lg">0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow border border-slate-100 dark:border-slate-700 text-center hover:scale-105 transition-transform">
+                    <i class="ph-duotone ph-clock text-2xl text-purple-500 mb-2"></i>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Total Jam</p>
+                    <p id="totHours" class="font-bold text-lg">0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow border border-slate-100 dark:border-slate-700 text-center hover:scale-105 transition-transform">
+                    <i class="ph-duotone ph-timer text-2xl text-orange-500 mb-2"></i>
+                    <p class="text-xs text-slate-500 dark:text-slate-400">Total Menit</p>
+                    <p id="totMins" class="font-bold text-lg">0</p>
+                </div>
+                <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow border border-slate-100 dark:border-slate-700 text-center hover:scale-105 transition-transform relative overflow-hidden">
+                    <div class="absolute inset-0 bg-brand-500/5 animate-pulse-slow"></div>
+                    <i class="ph-duotone ph-watch text-2xl text-red-500 mb-2 relative z-10"></i>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 relative z-10">Total Detik (Live)</p>
+                    <p id="totSecs" class="font-bold text-lg text-brand-600 dark:text-blue-400 relative z-10">0</p>
+                </div>
+            </div>
+
+            <!-- Next Birthday Countdown & Zodiac -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
+                <!-- Countdown -->
+                <div class="glass-card p-6 rounded-3xl shadow flex flex-col justify-center items-center text-center relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-gradient-to-b from-pink-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    
+                    <!-- Vector Cake Icon -->
+                    <svg class="w-24 h-24 mb-4 drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Plate -->
+                        <ellipse cx="50" cy="85" rx="35" ry="10" fill="#cbd5e1" class="dark:fill-slate-700"/>
+                        <!-- Cake Body -->
+                        <path d="M25 80 V 50 C 25 45, 75 45, 75 50 V 80 Z" fill="url(#cakeBase)"/>
+                        <path d="M25 80 C 25 85, 75 85, 75 80" fill="#ec4899"/>
+                        <path d="M25 50 C 25 55, 75 55, 75 50 C 75 45, 25 45, 25 50" fill="#fbcfe8"/>
+                        <!-- Drip -->
+                        <path d="M25 50 C 30 60, 35 45, 45 55 C 55 45, 65 60, 75 50 V 45 C 75 40, 25 40, 25 45 Z" fill="#fbcfe8"/>
+                        <!-- Candle -->
+                        <rect x="47" y="25" width="6" height="25" fill="#fde047" rx="3"/>
+                        <path d="M47 30 L53 35 M47 35 L53 40 M47 40 L53 45" stroke="#fbbf24" stroke-width="1.5"/>
+                        <!-- Flame (Animated) -->
+                        <path d="M50 12 C 55 20, 53 25, 50 25 C 47 25, 45 20, 50 12 Z" fill="url(#flame)" class="animate-pulse"/>
+                        
+                        <defs>
+                            <linearGradient id="cakeBase" x1="50" y1="45" x2="50" y2="85">
+                                <stop stop-color="#ec4899"/>
+                                <stop offset="1" stop-color="#be185d"/>
+                            </linearGradient>
+                            <radialGradient id="flame" cx="0.5" cy="0.5" r="0.5">
+                                <stop stop-color="#fef08a"/>
+                                <stop offset="1" stop-color="#f97316"/>
+                            </radialGradient>
+                        </defs>
+                    </svg>
+                    
+                    <h4 class="font-semibold mb-1 relative z-10 text-lg">Ulang Tahun Berikutnya</h4>
+                    <p id="nextBdayDate" class="text-sm text-slate-500 dark:text-slate-400 mb-4 relative z-10">-</p>
+                    <div class="flex gap-2 text-center text-xs font-medium w-full justify-center relative z-10">
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-lg p-2 w-16 shadow-inner">
+                            <div id="nbMonths" class="text-lg font-bold text-slate-800 dark:text-white">0</div>
+                            <div class="text-[10px] text-slate-500">Bulan</div>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-lg p-2 w-16 shadow-inner">
+                            <div id="nbDays" class="text-lg font-bold text-slate-800 dark:text-white">0</div>
+                            <div class="text-[10px] text-slate-500">Hari</div>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-lg p-2 w-16 shadow-inner">
+                            <div id="nbHours" class="text-lg font-bold text-slate-800 dark:text-white">0</div>
+                            <div class="text-[10px] text-slate-500">Jam</div>
+                        </div>
+                        <div class="bg-slate-100 dark:bg-slate-800 rounded-lg p-2 w-16 shadow-inner">
+                            <div id="nbMins" class="text-lg font-bold text-brand-500">0</div>
+                            <div class="text-[10px] text-slate-500">Menit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Zodiac -->
+                <div class="glass-card p-6 md:p-8 rounded-3xl shadow flex flex-col justify-center gap-6">
+                    <div class="flex items-center gap-4 group">
+                        <!-- Vector Zodiac/Stars Icon -->
+                        <svg class="w-16 h-16 drop-shadow-lg shrink-0 transform group-hover:rotate-12 transition-transform duration-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="45" fill="url(#nightSky)"/>
+                            <path d="M65 30 A 20 20 0 1 0 70 70 A 25 25 0 1 1 65 30 Z" fill="#fef08a"/>
+                            <circle cx="35" cy="40" r="2" fill="#fff" class="animate-ping"/>
+                            <circle cx="45" cy="25" r="1.5" fill="#fff"/>
+                            <circle cx="30" cy="65" r="2" fill="#fff"/>
+                            <circle cx="55" cy="60" r="1.5" fill="#fff"/>
+                            <path d="M35 40 L45 25 L55 60 L30 65 Z" stroke="#ffffff40" stroke-width="1" stroke-dasharray="2 2"/>
+                            <defs>
+                                <linearGradient id="nightSky" x1="0" y1="0" x2="100" y2="100">
+                                    <stop stop-color="#1e1b4b"/>
+                                    <stop offset="1" stop-color="#4c1d95"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Zodiak Bintang</p>
+                            <p id="zodiacSign" class="font-bold text-xl text-slate-800 dark:text-white">-</p>
+                        </div>
+                    </div>
+                    
+                    <div class="w-full h-[1px] bg-slate-200 dark:bg-slate-700/50"></div>
+                    
+                    <div class="flex items-center gap-4 group">
+                        <!-- Vector Chinese Zodiac/Lantern Icon -->
+                        <svg class="w-16 h-16 drop-shadow-lg shrink-0 transform group-hover:-rotate-6 transition-transform duration-500" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M40 15 H 60 V 20 H 40 Z" fill="#fbbf24"/>
+                            <path d="M25 30 Q 50 15 75 30 V 70 Q 50 85 25 70 Z" fill="url(#lanternGrad)"/>
+                            <path d="M40 80 H 60 V 85 H 40 Z" fill="#fbbf24"/>
+                            <!-- Tassel -->
+                            <path d="M50 85 V 95 M45 85 V 98 M55 85 V 98" stroke="#ef4444" stroke-width="2"/>
+                            <!-- Decoration -->
+                            <path d="M40 30 V 70 M50 25 V 75 M60 30 V 70" stroke="#991b1b" stroke-width="2" stroke-opacity="0.5"/>
+                            <circle cx="50" cy="50" r="10" fill="#fbbf24"/>
+                            <circle cx="50" cy="50" r="6" fill="#dc2626"/>
+                            <defs>
+                                <linearGradient id="lanternGrad" x1="25" y1="50" x2="75" y2="50">
+                                    <stop stop-color="#ef4444"/>
+                                    <stop offset="0.5" stop-color="#f87171"/>
+                                    <stop offset="1" stop-color="#ef4444"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        <div>
+                            <p class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Shio Tiongkok</p>
+                            <p id="chineseZodiac" class="font-bold text-xl text-slate-800 dark:text-white">-</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Umur Galaktik (Planet Lain) -->
+            <div class="glass-card rounded-3xl p-6 md:p-8 shadow-xl">
+                <h4 class="font-semibold flex items-center gap-2 mb-6 text-lg">
+                    <i class="ph-fill ph-planet text-brand-500 text-2xl"></i> Umur Galaktik Kamu
+                </h4>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Merkurius -->
+                    <div class="bg-slate-100/50 dark:bg-slate-800/50 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm group">
+                        <svg class="w-12 h-12 mb-2 drop-shadow-md transform group-hover:scale-110 transition-transform" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="40" fill="url(#mercGrad)"/>
+                            <circle cx="35" cy="40" r="8" fill="#64748b" opacity="0.4"/>
+                            <circle cx="65" cy="60" r="12" fill="#64748b" opacity="0.3"/>
+                            <defs>
+                                <radialGradient id="mercGrad" cx="0.3" cy="0.3" r="0.7">
+                                    <stop stop-color="#cbd5e1"/>
+                                    <stop offset="1" stop-color="#94a3b8"/>
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-semibold uppercase">Di Merkurius</p>
+                        <p class="font-bold text-slate-700 dark:text-slate-300"><span id="planetMerkurius" class="text-lg md:text-xl text-slate-800 dark:text-white">0</span> thn</p>
+                    </div>
+                    <!-- Venus -->
+                    <div class="bg-slate-100/50 dark:bg-slate-800/50 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm group">
+                        <svg class="w-12 h-12 mb-2 drop-shadow-md transform group-hover:scale-110 transition-transform" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="40" fill="url(#venusGrad)"/>
+                            <path d="M10 50 Q 50 30 90 50 Q 50 70 10 50 Z" fill="#d97706" opacity="0.2"/>
+                            <defs>
+                                <radialGradient id="venusGrad" cx="0.3" cy="0.3" r="0.7">
+                                    <stop stop-color="#fde68a"/>
+                                    <stop offset="1" stop-color="#d97706"/>
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-semibold uppercase">Di Venus</p>
+                        <p class="font-bold text-slate-700 dark:text-slate-300"><span id="planetVenus" class="text-lg md:text-xl text-slate-800 dark:text-white">0</span> thn</p>
+                    </div>
+                    <!-- Mars -->
+                    <div class="bg-slate-100/50 dark:bg-slate-800/50 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm group">
+                        <svg class="w-12 h-12 mb-2 drop-shadow-md transform group-hover:scale-110 transition-transform" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="40" fill="url(#marsGrad)"/>
+                            <circle cx="40" cy="35" r="6" fill="#991b1b" opacity="0.3"/>
+                            <circle cx="60" cy="55" r="10" fill="#991b1b" opacity="0.4"/>
+                            <defs>
+                                <radialGradient id="marsGrad" cx="0.3" cy="0.3" r="0.7">
+                                    <stop stop-color="#fca5a5"/>
+                                    <stop offset="1" stop-color="#b91c1c"/>
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-semibold uppercase">Di Mars</p>
+                        <p class="font-bold text-slate-700 dark:text-slate-300"><span id="planetMars" class="text-lg md:text-xl text-slate-800 dark:text-white">0</span> thn</p>
+                    </div>
+                    <!-- Jupiter -->
+                    <div class="bg-slate-100/50 dark:bg-slate-800/50 p-4 rounded-2xl flex flex-col items-center text-center hover:bg-white dark:hover:bg-slate-800 transition-colors shadow-sm group">
+                        <svg class="w-12 h-12 mb-2 drop-shadow-md transform group-hover:scale-110 transition-transform" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="50" cy="50" r="40" fill="url(#jupiterGrad)"/>
+                            <path d="M12 35 Q 50 45 88 35 V 45 Q 50 55 12 45 Z" fill="#92400e" opacity="0.4"/>
+                            <path d="M10 60 Q 50 50 90 60 V 65 Q 50 55 10 65 Z" fill="#b45309" opacity="0.3"/>
+                            <circle cx="65" cy="65" r="4" fill="#78350f" opacity="0.6"/>
+                            <defs>
+                                <radialGradient id="jupiterGrad" cx="0.3" cy="0.3" r="0.7">
+                                    <stop stop-color="#fcd34d"/>
+                                    <stop offset="1" stop-color="#b45309"/>
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                        <p class="text-[10px] md:text-xs text-slate-500 font-semibold uppercase">Di Jupiter</p>
+                        <p class="font-bold text-slate-700 dark:text-slate-300"><span id="planetJupiter" class="text-lg md:text-xl text-slate-800 dark:text-white">0</span> thn</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fun Facts -->
+            <div class="bg-gradient-to-br from-brand-900 to-purple-900 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden group">
+                <!-- Large Background Vector -->
+                <svg class="absolute -right-10 -bottom-10 w-64 h-64 opacity-10 transform group-hover:scale-110 transition-transform duration-700" viewBox="0 0 100 100" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 85 C 50 85, 10 60, 10 35 C 10 15, 35 15, 50 35 C 65 15, 90 15, 90 35 C 90 60, 50 85, 50 85 Z"/>
+                </svg>
+                
+                <h4 class="font-semibold flex items-center gap-3 mb-6 text-lg relative z-10">
+                    <!-- Vector Heart Pulse Icon -->
+                    <svg class="w-12 h-12 drop-shadow-md animate-bounce-slight shrink-0" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M50 85 C 50 85, 15 60, 15 35 C 15 20, 35 20, 50 35 C 65 20, 85 20, 85 35 C 85 60, 50 85, 50 85 Z" fill="url(#heartGrad)"/>
+                        <!-- EKG Line -->
+                        <path d="M20 50 L 35 50 L 42 30 L 58 75 L 65 50 L 80 50" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" class="animate-pulse"/>
+                        <defs>
+                            <linearGradient id="heartGrad" x1="15" y1="20" x2="85" y2="85">
+                                <stop stop-color="#ef4444"/>
+                                <stop offset="1" stop-color="#991b1b"/>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    Fakta Biologis (Estimasi)
+                </h4>
+                <div class="space-y-4 relative z-10 text-base md:text-lg">
+                    <div class="flex justify-between items-center border-b border-white/20 pb-3">
+                        <span class="text-white/80 flex items-center gap-2">
+                            <i class="ph-bold ph-heartbeat"></i> Detak Jantung
+                        </span>
+                        <span id="factHeart" class="font-bold text-pink-300">0</span>
+                    </div>
+                    <div class="flex justify-between items-center border-b border-white/20 pb-3">
+                        <span class="text-white/80 flex items-center gap-2">
+                            <i class="ph-bold ph-wind"></i> Tarikan Napas
+                        </span>
+                        <span id="factBreath" class="font-bold text-blue-300">0</span>
+                    </div>
+                    <div id="milestoneContainer" class="flex justify-between items-center">
+                        <span class="text-white/80 flex items-center gap-2 text-sm md:text-base">
+                            <i class="ph-bold ph-flag-banner"></i> <span id="milestoneTitle">10.000 Hari Kehidupan</span>
+                        </span>
+                        <span id="factMilestone" class="font-bold text-yellow-300 text-sm md:text-base">-</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center p-4 text-sm text-slate-500 dark:text-slate-400 mt-auto">
+        &copy; <span id="currentYear"></span> IZ TRACKER UMUR. Dibuat dengan <i class="ph-fill ph-heart text-red-500"></i>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
     <script>
-        // Mencegah user memilih tanggal di masa depan
-        document.getElementById('dob').max = new Date().toISOString().split("T")[0];
+        // Set Current Year in Footer
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
 
-        function calculateAge() {
-            let dobInput = document.getElementById('dob').value;
-            if (!dobInput) {
-                alert("Silakan pilih tanggal lahir terlebih dahulu!");
+        // Theme Toggle Logic
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        // Cek preferensi awal
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            html.classList.add('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+        });
+
+        // Initialize Flatpickr (Pop-up Calendar)
+        flatpickr("#dob", {
+            locale: "id", // Bahasa Indonesia
+            altInput: true,
+            altFormat: "j F Y",
+            dateFormat: "Y-m-d",
+            maxDate: "today",
+            allowInput: true, // Memungkinkan user mengetik langsung (PC)
+            disableMobile: true, // WAJIB TRUE: Agar pop-up khusus kita yang keren tidak tertimpa kalender bawaan HP
+            onOpen: function(selectedDates, dateStr, instance) {
+                // Jika belum ada tanggal dipilih, otomatis buka di tahun 2000 (agar lebih dekat dengan rata-rata tahun lahir)
+                if (selectedDates.length === 0) {
+                    instance.changeYear(2000);
+                }
+            }
+        });
+
+        // Data Zodiak
+        const zodiacSigns = [
+            { name: "Capricorn", start: [1, 1], end: [1, 19] },
+            { name: "Aquarius", start: [1, 20], end: [2, 18] },
+            { name: "Pisces", start: [2, 19], end: [3, 20] },
+            { name: "Aries", start: [3, 21], end: [4, 19] },
+            { name: "Taurus", start: [4, 20], end: [5, 20] },
+            { name: "Gemini", start: [5, 21], end: [6, 20] },
+            { name: "Cancer", start: [6, 21], end: [7, 22] },
+            { name: "Leo", start: [7, 23], end: [8, 22] },
+            { name: "Virgo", start: [8, 23], end: [9, 22] },
+            { name: "Libra", start: [9, 23], end: [10, 22] },
+            { name: "Scorpio", start: [10, 23], end: [11, 21] },
+            { name: "Sagittarius", start: [11, 22], end: [12, 21] },
+            { name: "Capricorn", start: [12, 22], end: [12, 31] }
+        ];
+
+        // Data Shio (Berdasarkan tahun kelipatan 12)
+        const chineseZodiacs = ["Monyet", "Ayam", "Anjing", "Babi", "Tikus", "Kerbau", "Macan", "Kelinci", "Naga", "Ular", "Kuda", "Kambing"];
+
+        let liveTimer = null;
+        let selectedDob = null;
+
+        // Elements
+        const btnHitung = document.getElementById('btnHitung');
+        const dobInput = document.getElementById('dob');
+        const errorMsg = document.getElementById('errorMsg');
+        const resultContainer = document.getElementById('resultContainer');
+
+        btnHitung.addEventListener('click', () => {
+            const dateStr = dobInput.value;
+            if (!dateStr) {
+                showError("Pilih tanggal lahir kamu terlebih dahulu.");
                 return;
             }
 
-            let dob = new Date(dobInput);
-            let today = new Date();
+            selectedDob = new Date(dateStr);
+            const today = new Date();
 
-            // Kalkulasi Umur Inti (Tahun, Bulan, Hari)
-            let years = today.getFullYear() - dob.getFullYear();
-            let months = today.getMonth() - dob.getMonth();
-            let days = today.getDate() - dob.getDate();
+            if (selectedDob > today) {
+                showError("Tanggal lahir tidak boleh di masa depan.");
+                return;
+            }
 
-            if (months < 0 || (months === 0 && days < 0)) {
+            hideError();
+            
+            // Initial Calculate
+            calculateAndDisplay();
+            
+            // Show result with animation
+            resultContainer.classList.add('show');
+
+            // Start Live Timer for seconds and countdown
+            if (liveTimer) clearInterval(liveTimer);
+            liveTimer = setInterval(calculateAndDisplay, 1000);
+            
+            // Scroll sedikit ke bawah agar hasil terlihat di mobile
+            setTimeout(() => {
+                resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        });
+
+        function showError(msg) {
+            errorMsg.textContent = msg;
+            errorMsg.classList.remove('hidden');
+            resultContainer.classList.remove('show');
+            if (liveTimer) clearInterval(liveTimer);
+        }
+
+        function hideError() {
+            errorMsg.classList.add('hidden');
+        }
+
+        function calculateAndDisplay() {
+            if (!selectedDob) return;
+
+            const now = new Date();
+            
+            // 1. Exact Age (Years, Months, Days)
+            let years = now.getFullYear() - selectedDob.getFullYear();
+            let months = now.getMonth() - selectedDob.getMonth();
+            let days = now.getDate() - selectedDob.getDate();
+
+            if (days < 0) {
+                months--;
+                // Get days in previous month
+                const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+                days += prevMonth.getDate();
+            }
+            if (months < 0) {
                 years--;
                 months += 12;
             }
+
+            animateValue('resYears', years);
+            document.getElementById('resMonths').innerText = months;
+            document.getElementById('resDays').innerText = days;
+
+            // --- FITUR BARU: Hari Lahir & Generasi ---
+            const daysOfWeek = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            document.getElementById('bornDay').innerText = daysOfWeek[selectedDob.getDay()];
             
-            if (days < 0) {
-                let prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
-                days += prevMonth.getDate();
-                months--;
+            let gen = "";
+            const y = selectedDob.getFullYear();
+            if (y >= 1946 && y <= 1964) gen = "Baby Boomer";
+            else if (y >= 1965 && y <= 1980) gen = "Gen X";
+            else if (y >= 1981 && y <= 1996) gen = "Millenial";
+            else if (y >= 1997 && y <= 2012) gen = "Gen Z";
+            else if (y >= 2013 && y <= 2024) gen = "Gen Alpha";
+            else if (y > 2024) gen = "Gen Beta";
+            else gen = "Pioneer";
+            document.getElementById('generation').innerText = gen;
+
+            // --- FITUR BARU: Life Progress (Asumsi 80 Tahun) ---
+            const lifeExpectancy = 80;
+            // Umur eksak dalam desimal untuk progress bar yang lebih mulus
+            const exactYears = years + (months / 12) + (days / 365.25);
+            let progress = (exactYears / lifeExpectancy) * 100;
+            if(progress > 100) progress = 100; // Maksimal 100%
+            if(progress < 0) progress = 0;
+            
+            document.getElementById('lifeProgressBar').style.width = progress + "%";
+            document.getElementById('lifeProgressText').innerText = progress.toFixed(2) + "%";
+
+            // 2. Total Stats
+            const diffTime = Math.abs(now - selectedDob);
+            const totDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const totWeeks = Math.floor(totDays / 7);
+            const totMonths = (years * 12) + months;
+            const totHours = Math.floor(diffTime / (1000 * 60 * 60));
+            const totMins = Math.floor(diffTime / (1000 * 60));
+            const totSecs = Math.floor(diffTime / 1000);
+
+            document.getElementById('totMonths').innerText = formatNumber(totMonths);
+            document.getElementById('totWeeks').innerText = formatNumber(totWeeks);
+            document.getElementById('totDays').innerText = formatNumber(totDays);
+            document.getElementById('totHours').innerText = formatNumber(totHours);
+            document.getElementById('totMins').innerText = formatNumber(totMins);
+            document.getElementById('totSecs').innerText = formatNumber(totSecs);
+
+            // 3. Next Birthday
+            let nextBday = new Date(now.getFullYear(), selectedDob.getMonth(), selectedDob.getDate());
+            if (now > nextBday) {
+                nextBday.setFullYear(now.getFullYear() + 1);
+            }
+            
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('nextBdayDate').innerText = nextBday.toLocaleDateString('id-ID', options);
+
+            const diffBday = nextBday - now;
+            
+            // Hitung sisa waktu ke ultah (akurasi bulan & hari pendekatan kasar, detail di jam/menit)
+            const b_daysTotal = Math.floor(diffBday / (1000 * 60 * 60 * 24));
+            const b_months = Math.floor(b_daysTotal / 30);
+            const b_days = b_daysTotal % 30;
+            const b_hours = Math.floor((diffBday / (1000 * 60 * 60)) % 24);
+            const b_mins = Math.floor((diffBday / 1000 / 60) % 60);
+
+            document.getElementById('nbMonths').innerText = b_months;
+            document.getElementById('nbDays').innerText = b_days;
+            document.getElementById('nbHours').innerText = b_hours;
+            document.getElementById('nbMins').innerText = b_mins;
+
+            // 4. Zodiac & Shio
+            const m = selectedDob.getMonth() + 1;
+            const d = selectedDob.getDate();
+            let zSign = "Unknown";
+            for (let z of zodiacSigns) {
+                if ((m === z.start[0] && d >= z.start[1]) || (m === z.end[0] && d <= z.end[1])) {
+                    zSign = z.name;
+                    break;
+                }
+            }
+            document.getElementById('zodiacSign').innerText = zSign;
+            
+            const shioIndex = selectedDob.getFullYear() % 12;
+            document.getElementById('chineseZodiac').innerText = chineseZodiacs[shioIndex];
+
+            // --- FITUR BARU: Umur di Planet Lain ---
+            const earthDaysForPlanet = diffTime / (1000 * 60 * 60 * 24);
+            const earthYearsExact = earthDaysForPlanet / 365.25;
+            
+            // Menggunakan rasio revolusi planet
+            document.getElementById('planetMerkurius').innerText = (earthYearsExact / 0.2408467).toFixed(1);
+            document.getElementById('planetVenus').innerText = (earthYearsExact / 0.61519726).toFixed(1);
+            document.getElementById('planetMars').innerText = (earthYearsExact / 1.8808158).toFixed(1);
+            document.getElementById('planetJupiter').innerText = (earthYearsExact / 11.862615).toFixed(1);
+
+            // 5. Fun Facts
+            // Estimasi jantung: 80 detak per menit
+            const beats = totMins * 80;
+            // Estimasi napas: 16 tarikan per menit
+            const breaths = totMins * 16;
+            
+            document.getElementById('factHeart').innerText = formatNumber(beats);
+            document.getElementById('factBreath').innerText = formatNumber(breaths);
+
+            // --- FITUR BARU: Kapan Hari Kehidupan Besar Terdekat? ---
+            const optionsMilestone = { day: 'numeric', month: 'long', year: 'numeric' };
+            const dayThresholds = [10000, 20000, 30000, 40000]; // Target pencapaian hari
+            
+            let milestoneDate = null;
+            let targetDays = 10000;
+
+            // Cari milestone terdekat yang belum terlewati
+            for (let target of dayThresholds) {
+                const targetMs = target * 24 * 60 * 60 * 1000;
+                const potentialDate = new Date(selectedDob.getTime() + targetMs);
+                if (potentialDate > now) {
+                    milestoneDate = potentialDate;
+                    targetDays = target;
+                    break;
+                }
             }
 
-            // Kalkulasi Total Hari Hidup
-            let timeDiff = today.getTime() - dob.getTime();
-            let totalDays = Math.floor(timeDiff / (1000 * 3600 * 24));
-
-            // Kalkulasi Hari Menuju Ulang Tahun Berikutnya
-            let nextBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
-            
-            // Jika ulang tahun tahun ini sudah lewat, set ke tahun depan
-            if (today.getTime() > nextBday.getTime()) {
-                nextBday.setFullYear(today.getFullYear() + 1);
-            }
-            
-            // Mengatasi kasus jika hari ini adalah hari ulang tahun
-            let daysToNextBday;
-            if (today.getMonth() === dob.getMonth() && today.getDate() === dob.getDate()) {
-                daysToNextBday = 0; // Selamat Ulang Tahun!
+            if (milestoneDate) {
+                document.getElementById('milestoneTitle').innerText = `${formatNumber(targetDays)} Hari Kehidupan`;
+                document.getElementById('factMilestone').innerText = milestoneDate.toLocaleDateString('id-ID', optionsMilestone);
             } else {
-                let bdayDiff = nextBday.getTime() - today.getTime();
-                daysToNextBday = Math.ceil(bdayDiff / (1000 * 3600 * 24));
+                document.getElementById('milestoneTitle').innerText = `Rekor Kehidupan`;
+                document.getElementById('factMilestone').innerText = "Luar Biasa!";
             }
-
-            // Render hasil ke UI
-            document.getElementById('main-age').innerText = `${years} Tahun`;
-            document.getElementById('months').innerText = months;
-            document.getElementById('days').innerText = days;
-            document.getElementById('total-days').innerText = totalDays.toLocaleString('id-ID'); // Format angka dengan titik
-            
-            let bdayText = daysToNextBday === 0 ? "Hari Ini!" : daysToNextBday;
-            document.getElementById('next-bday').innerText = bdayText;
-
-            // Tampilkan kotak hasil dengan animasi
-            document.getElementById('result').style.display = 'block';
         }
+
+        // Helper: Format Number with commas
+        function formatNumber(num) {
+            return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Helper: Simple Number Animation
+        function animateValue(id, end) {
+            const obj = document.getElementById(id);
+            if (parseInt(obj.innerText) === end) return; // skip if same
+            obj.innerText = end; 
+            // Tambahkan animasi denyut sesaat
+            obj.classList.remove('animate-pulse');
+            void obj.offsetWidth; // trigger reflow
+            obj.classList.add('animate-pulse');
+            setTimeout(() => obj.classList.remove('animate-pulse'), 1000);
+        }
+
     </script>
 </body>
 </html>
