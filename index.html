@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IZ TRACKER UMUR</title>
+    <style>
+        /* Import Google Font */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif; 
+        }
+        
+        body { 
+            background: #0f172a; /* Latar belakang gelap modern */
+            color: #f8fafc; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+        
+        .container { 
+            background: #1e293b; 
+            max-width: 400px; 
+            width: 100%; 
+            padding: 30px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            text-align: center; 
+            border: 1px solid #334155; 
+        }
+        
+        h1 { 
+            font-size: 24px; 
+            font-weight: 600; 
+            color: #38bdf8; 
+            margin-bottom: 25px; 
+            letter-spacing: 2px; 
+        }
+        
+        .input-group { 
+            margin-bottom: 20px; 
+            text-align: left; 
+        }
+        
+        label { 
+            display: block; 
+            font-size: 14px; 
+            margin-bottom: 8px; 
+            color: #cbd5e1; 
+        }
+        
+        input[type="date"] { 
+            width: 100%; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 10px; 
+            background: #0f172a; 
+            color: #fff; 
+            font-size: 16px; 
+            outline: none; 
+            border: 1px solid #475569; 
+            transition: 0.3s; 
+            /* Mengubah warna icon kalender bawaan browser agar terlihat di dark mode */
+            color-scheme: dark; 
+        }
+        
+        input[type="date"]:focus { 
+            border-color: #38bdf8; 
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); 
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            border: none; 
+            border-radius: 10px; 
+            background: linear-gradient(135deg, #38bdf8, #2563eb); 
+            color: white; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); 
+        }
+        
+        button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6); 
+        }
+        
+        .result-box { 
+            margin-top: 25px; 
+            display: none; 
+            animation: fadeIn 0.5s ease; 
+        }
+        
+        .main-age { 
+            font-size: 32px; 
+            font-weight: 600; 
+            color: #fbbf24; 
+            margin-bottom: 20px; 
+        }
+        
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 12px; 
+        }
+        
+        .stat-card { 
+            background: #0f172a; 
+            padding: 15px; 
+            border-radius: 12px; 
+            border: 1px solid #334155; 
+            transition: 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: #38bdf8;
+            transform: translateY(-2px);
+        }
+        
+        .stat-value { 
+            font-size: 20px; 
+            font-weight: 600; 
+            color: #38bdf8; 
+        }
+        
+        .stat-label { 
+            font-size: 12px; 
+            color: #94a3b8; 
+            margin-top: 5px;
+        }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>IZ TRACKER UMUR</h1>
+        
+        <div class="input-group">
+            <label for="dob">Masukkan Tanggal Lahir</label>
+            <input type="date" id="dob">
+        </div>
+        
+        <button onclick="calculateAge()">Lacak Sekarang</button>
+
+        <div class="result-box" id="result">
+            <div class="main-age" id="main-age">0 Tahun</div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="months">0</div>
+                    <div class="stat-label">Bulan Lagi</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="days">0</div>
+                    <div class="stat-label">Hari Lagi</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-days">0</div>
+                    <div class="stat-label">Total Hari Hidup</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="next-bday">0</div>
+                    <div class="stat-label">Hari Menuju Ultah</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mencegah user memilih tanggal di masa depan
+        document.getElementById('dob').max = new Date().toISOString().split("T")[0];
+
+        function calculateAge() {
+            let dobInput = document.getElementById('dob').value;
+            if (!dobInput) {
+                alert("Silakan pilih tanggal lahir terlebih dahulu!");
+                return;
+            }
+
+            let dob = new Date(dobInput);
+            let today = new Date();
+
+            // Kalkulasi Umur Inti (Tahun, Bulan, Hari)
+            let years = today.getFullYear() - dob.getFullYear();
+            let months = today.getMonth() - dob.getMonth();
+            let days = today.getDate() - dob.getDate();
+
+            if (months < 0 || (months === 0 && days < 0)) {
+                years--;
+                months += 12;
+            }
+            
+            if (days < 0) {
+                let prevMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                days += prevMonth.getDate();
+                months--;
+            }
+
+            // Kalkulasi Total Hari Hidup
+            let timeDiff = today.getTime() - dob.getTime();
+            let totalDays = Math.floor(timeDiff / (1000 * 3600 * 24));
+
+            // Kalkulasi Hari Menuju Ulang Tahun Berikutnya
+            let nextBday = new Date(today.getFullYear(), dob.getMonth(), dob.getDate());
+            
+            // Jika ulang tahun tahun ini sudah lewat, set ke tahun depan
+            if (today.getTime() > nextBday.getTime()) {
+                nextBday.setFullYear(today.getFullYear() + 1);
+            }
+            
+            // Mengatasi kasus jika hari ini adalah hari ulang tahun
+            let daysToNextBday;
+            if (today.getMonth() === dob.getMonth() && today.getDate() === dob.getDate()) {
+                daysToNextBday = 0; // Selamat Ulang Tahun!
+            } else {
+                let bdayDiff = nextBday.getTime() - today.getTime();
+                daysToNextBday = Math.ceil(bdayDiff / (1000 * 3600 * 24));
+            }
+
+            // Render hasil ke UI
+            document.getElementById('main-age').innerText = `${years} Tahun`;
+            document.getElementById('months').innerText = months;
+            document.getElementById('days').innerText = days;
+            document.getElementById('total-days').innerText = totalDays.toLocaleString('id-ID'); // Format angka dengan titik
+            
+            let bdayText = daysToNextBday === 0 ? "Hari Ini!" : daysToNextBday;
+            document.getElementById('next-bday').innerText = bdayText;
+
+            // Tampilkan kotak hasil dengan animasi
+            document.getElementById('result').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
